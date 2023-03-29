@@ -46,6 +46,9 @@ All of these resources are **COMPLETELY FREE**.
 | [Git Tutorial for Beginners 2022](https://www.youtube.com/watch?v=eeuNAIZoWRU) | YouTube          |
 | [Git Tutorial for Beginners: Learn Git in 1 Hour](https://www.youtube.com/watch?v=8JJ101D3knE) | YouTube          |
 | [How to automate your GitHub profile README](https://blog.ediri.io/how-to-automate-your-github-profile-readme) | ediri.io         |
+| [Git SkillCred Credential Linux Foundation](https://training.linuxfoundation.org/certification/git/) | Linux Foundation |
+| [Become a Git Guru](https://www.atlassian.com/git/tutorials) | Atlassian        |
+| [Learn Git Branching](https://learngitbranching.js.org/)     | Git Branching    |
 
 #### Open Source Contribution
 

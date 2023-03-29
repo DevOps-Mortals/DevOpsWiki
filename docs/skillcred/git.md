@@ -1,13 +1,5 @@
 # Git
 
-## Resources
-
-[Hands-On Git](https://learngitbranching.js.org)
-
-[Atlassian Git Tutorials - Become a Git Guru](https://www.atlassian.com/git/tutorials)
-
-[Git Certification](https://training.linuxfoundation.org/certification/git/)
-
 ## Working with Local repositories
 
 ### `config`

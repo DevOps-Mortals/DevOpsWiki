@@ -1,0 +1,8 @@
+{
+  "label": "Orchestration",
+  "position": 8,
+  "link": {
+    "type": "generated-index",
+    "description": "Automation of containerized workloads & services."
+  }
+}

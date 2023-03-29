@@ -1,0 +1,8 @@
+{
+  "label": "CI/CD",
+  "position": 10,
+  "link": {
+    "type": "generated-index",
+    "description": "The engine of automation in integration & delivery."
+  }
+}

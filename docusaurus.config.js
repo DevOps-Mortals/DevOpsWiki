@@ -86,7 +86,7 @@ const config = {
             items: [
               {
                 label: 'Wiki',
-                to: '/docs/',
+                to: '/',
               },
               {
                 label: 'Blog',

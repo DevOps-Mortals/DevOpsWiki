@@ -1,6 +1,7 @@
 ---
 slug: ec2-instance-terraform-keypair
 title: Provisioning EC2 Instance Using Terraform & Keypair
+date: 2022-11-24
 authors: nyukeit
 tags: [AWS, EC2, Terraform]
 ---

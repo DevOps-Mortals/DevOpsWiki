@@ -6,8 +6,8 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'DevOps Wiki',
-  tagline: 'Get started with DevOps with basics',
+  title: 'DevOps with Nyukeit',
+  tagline: 'Notes, tutorials & resources for beginners in DevOps.',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
@@ -58,7 +58,7 @@ const config = {
       // Replace with your project's social card
       image: 'img/docusaurus-social-card.jpg',
       navbar: {
-        title: 'DevOps Wiki',
+        title: 'DevOps with Nyukeit',
         logo: {
           alt: 'My Site Logo',
           src: 'img/logo.svg',
@@ -72,7 +72,7 @@ const config = {
           },
           {to: '/blog', label: 'Blog', position: 'left'},
           {
-            href: 'https://github.com/nyukeit/devopswiki',
+            href: 'https://github.com/nyukeit/DevOpsWiki',
             label: 'GitHub',
             position: 'right',
           },
@@ -95,37 +95,42 @@ const config = {
             ],
           },
           {
-            title: 'Community',
+            title: 'Connect With Me',
             items: [
               {
-                label: 'GitHub',
-                href: 'https://github.com/nyukeit/devopswiki',
+                label: 'LinkedIn',
+                href: 'https://linkedin.com/in/nyukeit',
               },
               {
-                label: 'Discord',
-                href: 'https://discordapp.com/invite/docusaurus',
+                label: 'Mastodon',
+                href: 'https://fosstodon.org/@nyukeit',
               },
               {
                 label: 'Twitter',
-                href: 'https://twitter.com/docusaurus',
+                href: 'https://twitter.com/nyukeit',
               },
             ],
           },
           {
-            title: 'More',
+            title: 'Other Blogs',
             items: [
               {
-                label: 'Blog',
-                to: '/blog',
+                label: 'Medium',
+                href: 'https://medium.com/@nyukeit',
               },
               {
-                label: 'GitHub',
-                href: 'https://github.com/facebook/docusaurus',
+                label: 'Hashnode',
+                href: 'https://hashnode.com/@nyukeit',
+              },
+              {
+                label: 'Dev.to',
+                href: 'https://dev.to/@nyukeit',
               },
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} Nyukeit. Built with Docusaurus.`,
+        image: 'https://img.shields.io/github/license/nyukeit/DevOpsWiki?style=for-the-badge',
+        copyright: `Copyright © ${new Date().getFullYear()} Nyukeit.`,
       },
       prism: {
         theme: lightCodeTheme,

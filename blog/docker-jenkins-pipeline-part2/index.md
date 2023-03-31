@@ -1,6 +1,7 @@
 ---
 slug: docker-jenkins-pipeline-python-app-part2
 title: Building a Docker-Jenkins CI/CD Pipeline for a Python App (Part 2)
+date: 2022-11-29T14:00
 authors: nyukeit
 tags: [Python, Docker, Jenkins, CI/CD]
 ---

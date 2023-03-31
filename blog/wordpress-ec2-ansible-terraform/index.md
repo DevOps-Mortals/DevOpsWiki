@@ -1,6 +1,7 @@
 ---
 slug: wordpress-on-ec2-using-ansible-terraform
 title: Deploying WordPress Using Terraform and Ansible on AWS EC2
+date: 2023-02-03
 authors: nyukeit
 tags: [WordPress, Terraform, Ansible, AWS, EC2]
 ---

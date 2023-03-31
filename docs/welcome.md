@@ -3,7 +3,15 @@ slug: /
 sidebar_position: 1
 ---
 
-# Welcome to DevOps Wiki
+# DevOps Wiki
+
+:::info
+
+Update: Certain sections of this wiki are still blank. That is because I am still learning them. I have no intention to populate this website with plagiarised content.
+
+:::
+
+DevOps Wiki is a central place where I collect all my learnings in the world of DevOps. This website was generated using [Docusaurus](https://github.com/facebook/docusaurus). This website should be used as an entry point into the world of DevOps and it's various tools. This documentation is not completely exhaustive in any manner.
 
 ## Disclaimer
 

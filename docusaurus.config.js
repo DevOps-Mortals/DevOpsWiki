@@ -129,8 +129,7 @@ const config = {
             ],
           },
         ],
-        image: 'https://img.shields.io/github/license/nyukeit/DevOpsWiki?style=for-the-badge',
-        copyright: `Copyright © ${new Date().getFullYear()} Nyukeit.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Nyukeit. MIT License.`,
       },
       prism: {
         theme: lightCodeTheme,

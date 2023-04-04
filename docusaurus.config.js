@@ -8,7 +8,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const config = {
   title: 'DevOps with Nyukeit',
   tagline: 'Notes, tutorials & resources for beginners in DevOps.',
-  favicon: 'img/favicon.ico',
+  // favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
   url: 'https://nyukeit.dev',
@@ -59,7 +59,7 @@ const config = {
       image: 'img/docusaurus-social-card.jpg',
       navbar: {
         title: 'DevOps with Nyukeit',
-        logo: {
+         logo: {
           alt: 'My Site Logo',
           src: 'img/logo.svg',
         },
@@ -129,7 +129,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} Nyukeit. MIT License.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Nyukeit.`,
       },
       prism: {
         theme: lightCodeTheme,

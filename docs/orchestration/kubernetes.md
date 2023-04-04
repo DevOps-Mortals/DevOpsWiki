@@ -10,6 +10,51 @@ The de facto container orchestration champion.
 
 ### Key Concepts & Terminologies
 
+The container runtime interface and 'kubelet' need to be run as system processes and not container pods like the other components like etcd, kube-proxy, scheduler, etc.
+
+#### API Server
+
+- Entry point into the kube cluster
+- Listens to the client request & responds
+
+#### ETCD
+
+- Simple key value pair database
+- Stores all cluster configuration like number of pods and their config status
+
+#### Scheduler
+
+- Receives requests from API server to identify a worker node
+- Validates all the nodes and identifies the best node based on resource availability
+- Once node identified, the scheduler informs the worker 
+
+#### Kubelet
+
+- Receives requests from API Server
+- Starts the pod creation
+- Manages the pod lifecycle on the  worker nodes
+- Gives node/pod information to the API
+
+#### Controller Manager
+
+- Is responsible for the desired state
+- What we request == desired state
+
+#### CNI
+
+- Responsible for IP allocation to the pods
+- Facilitates pod to pod communication
+
+#### CRI
+
+- Pull images from the registry
+- Create containers from images
+
+#### Kube Proxy
+
+- Helps in configuring port mappings
+- Responsible for updating all necessary route configurations to the containers from the host level.
+
 ### Kubernetes Alternatives
 
 ## Containers
@@ -25,6 +70,26 @@ The de facto container orchestration champion.
 ## Running Applications
 
 ### Pods
+
+#### Single Container Pods
+
+#### Multi-Container Pods
+
+##### Sidecars
+
+##### Ambassadors
+
+##### Adapters
+
+#### Init Container Pods
+
+#### Static Pods
+
+- Created and managed by kubelet directly without the involvement of API server
+- Any manifests present in the `staticPodPath` will automatically be created and persisted by kubelet
+- The `staticPodPath` can be found from the kubelet `config.yaml`
+- Static Pods are appended with the node name to which they belong
+- All system pods created by Kubernetes upon install are Static Pods, like etcd, api-server, etc.
 
 ### Deployments
 

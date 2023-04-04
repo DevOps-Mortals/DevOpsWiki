@@ -5,9 +5,9 @@ sidebar_position: 1
 
 # DevOps Wiki
 
-:::info
+:::info Update
 
-Update: Certain sections of this wiki are still blank. That is because I am still learning them. I have no intention to populate this website with plagiarised content.
+Certain sections of this wiki are still blank. That is because I am still learning them. I have no intention to populate this website with plagiarised content.
 
 :::
 

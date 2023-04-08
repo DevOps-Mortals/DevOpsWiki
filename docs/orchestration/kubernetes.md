@@ -4,10 +4,6 @@ The de facto container orchestration champion.
 
 ## Introduction
 
-### Overview of Kubernetes
-
-### Why Kubernetes
-
 ### Key Concepts & Terminologies
 
 The container runtime interface and 'kubelet' need to be run as system processes and not container pods like the other components like etcd, kube-proxy, scheduler, etc.
@@ -769,12 +765,106 @@ spec:
 kubectl get ds -n kube-system -o wide
 ```
 
-
-
 ### Deployment
+
+~ developing ~
 
 ### Job
 
+~ developing ~
+
 ### CronJob
 
+~ developing ~
+
 ### StatefulSet
+
+~ developing ~
+
+## Services
+
+- Allow us to access applications running in single/multiple pods
+
+### Types of Services
+
+#### List Services
+
+```bash
+kubectl get services -o wide
+```
+
+#### Describe Services
+
+```bash
+kubecctl describe service <servicename>
+```
+
+#### ClusterIP
+
+- The default service in Kubernetes, if nothing is mentioned
+- Acts as an internal virtual load balancer
+
+**Sample YAML**
+
+```yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: pyapp
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: pyapp
+  ports:
+    - name: http # Name can be anything
+      port: 80 # Port used with ClusterIP to access, Mandatory!
+      targetPort: 3000 # Port of the app in the container
+```
+
+#### NodePort
+
+- This will expose the application outside of the internal network
+- Published port number on every node in the cluster
+- This is the entry point into the kubernetes cluster from the outside world.
+- ClusterIP is automatically created on creation of the NodePort and maps to the ClusterIP
+
+```yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: pyapp
+  namespace: default
+spec:
+  type: NodePort
+  selector:
+    app: pyapp
+  ports:
+    - name: http # Name can be anything
+      port: 80 # Port used with ClusterIP to access, Mandatory!
+      targetPort: 3000 # Port of the app in the container
+      nodePort: 30001 # Published port on every VM, if not mentioned, it is generated automatically
+```
+
+#### LoadBalancer
+
+- Distribute external traffic to the cluster
+- Can be created manually, for eg. (nginx, haproxy, f5)
+- Works with the Cloud Controller Manager, based on correct access, creates an external load balancer on the cloud of choice
+
+```yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: pyapp-lb
+  namespace: default
+spec:
+  type: LoadBalancer
+  selector:
+    app: pyapp
+  ports:
+    - name: http # Name can be anything
+      port: 80 # Port used with ClusterIP to access, Mandatory!
+      targetPort: 3000 # Port of the app in the container
+```
+

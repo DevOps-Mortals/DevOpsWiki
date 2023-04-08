@@ -12,6 +12,22 @@ The de facto container orchestration champion.
 
 The container runtime interface and 'kubelet' need to be run as system processes and not container pods like the other components like etcd, kube-proxy, scheduler, etc.
 
+#### Control Plane
+
+- To deploy pods on control plane, you need to remove the NoSchedule Taint on the master node.
+
+  ```bash
+  kubectl describe node master-node | grep -i taints
+  ```
+
+  ##### Untaint the Master Node
+
+  ```bash
+  # Add a hyphen at the end to untaint, remove the hyphen to taint again
+  
+  kubectl taint node master-node node-role.kubernetes.io/control-plane:NoSchedule-
+  ```
+
 #### API Server
 
 - Entry point into the kube cluster
@@ -55,18 +71,6 @@ The container runtime interface and 'kubelet' need to be run as system processes
 - Helps in configuring port mappings
 - Responsible for updating all necessary route configurations to the containers from the host level.
 
-### Kubernetes Alternatives
-
-## Containers
-
-## Setting Up Kubernetes
-
-### Deploying your First Application
-
-### Choosing a Managed Provider
-
-### Installing a Local Cluster
-
 ## Running Applications
 
 ### Pods
@@ -90,110 +94,6 @@ The container runtime interface and 'kubelet' need to be run as system processes
 - The `staticPodPath` can be found from the kubelet `config.yaml`
 - Static Pods are appended with the node name to which they belong
 - All system pods created by Kubernetes upon install are Static Pods, like etcd, api-server, etc.
-
-### Deployments
-
-### ReplicaSets
-
-### StatefulSets
-
-### Jobs
-
-## Services & Networking
-
-### External Access to Services
-
-### Load Balancing
-
-### Networking & Pod2Pod Communication
-
-## Configuration Management
-
-### Injecting Pod Config with ConfigMaps
-
-### Using Secrets for Sensitive Data
-
-## Resource Management
-
-### Setting Resource Requests and Limits
-
-### Assigning Quotas to Namespaces
-
-### Monitoring & Optimizing Resource Usage
-
-## Security
-
-### Role-based Access Control (RBAC)
-
-### Networking Security
-
-### Container & Pod Security
-
-### Security Scanners
-
-## Monitoring & Logging
-
-### Logs
-
-### Metrics
-
-### Traces
-
-### Resource Health
-
-### Observability Engines
-
-## Autoscaling
-
-### Horizontal Pod Autoscaler (HPA)
-
-### Vertical Pod Autoscaler (VPA)
-
-### Cluster Autoscaling
-
-## Scheduling
-
-### Basics
-
-### Taints & Tolerations
-
-### Topology Spread Constraints
-
-### Pod Priorities
-
-### Evictions
-
-## Storage & Volumes
-
-### CSI Drivers
-
-### Stateful Applications
-
-## Deployment Patterns
-
-### CI/CD Integration
-
-### GitOps
-
-### Helm Charts
-
-### Canary Deployments
-
-### Blue-Green Deployments
-
-### Rolling Updates / Rollbacks
-
-## Advanced Topics
-
-### Cluster Operations
-
-#### Should you manage your own cluster?
-
-#### Installing the control plane
-
-#### Adding and managing worker nodes
-
-#### Multi-Cluster Management
 
 ## Self - Managed
 
@@ -766,3 +666,115 @@ DBNAME: "devdb"
 DBURL: "jdbc:thin@19.5.6.7/devdb"
 ```
 
+## Types of Controllers
+
+- An abstraction that controls a group of pods.
+- If you delete the controller, the pods get deleted
+
+### ReplicaSet (replacement of Replication Controller)
+
+Here is a sample YAML for a ReplicaSet
+
+```yaml
+kind: ReplicaSet
+apiVersion: apps/v1
+metadata:
+  name: pyapp
+  namespace: frontend
+  
+  # Labels are optional for controllers, unlike for pods, where they are mandatory
+  labels: 
+spec:
+  
+  # Total number of pods to be created, default is 1
+  replicas: 4
+  
+  # Which Pod to be created
+  template:
+    metadata:
+      # We don't use the 'name' object here as K8S will generate a unique pod name automatically. Multiple containers with the same names are not possible.
+      labels:
+        app: pyapp
+    spec:
+      terminationGracePeriodSeconds: 30
+      restartPolicy: Always
+      containers:
+        - name: cont1
+          image: nginx:latest
+   
+   # Select exiting pod(s) to be managed or controlled by this controller. Is mandatory, without this the controller will not be deployed.
+  selector:
+    matchLabels:
+      app: frontend
+
+```
+
+#### List ReplicaSet
+
+```bash
+kubectl get rs <name> -o wide
+```
+
+#### Scale ReplicaSet
+
+```bash
+kubectl scale replicaset <name> --replicas <number>
+```
+
+#### Delete ReplicaSet
+
+```bash
+kubectl delete replicaset <name>
+```
+
+### DaemonSet
+
+- Cannot be manually scaled like ReplicaSet
+- Creates one pod per worker node
+- Auto-scales based on the number of worker nodes online
+- Use cases can include deploying a logging/monitoring agent per node (only one is needed per node to collect logs, so it can be deployed using DaemonSet)
+- User deployed DaemonSet cannot have an instance deployed on master node
+
+```yaml
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: fluentd
+  namespace: frontend
+  
+  # Labels are optional for controllers, unlike for pods, where they are mandatory
+  labels: 
+spec:
+  template:
+    metadata:
+      # We don't use the 'name' object here as K8S will generate a unique pod name automatically. Multiple containers with the same names are not possible.
+      labels:
+        app: fluentd
+    spec:
+      terminationGracePeriodSeconds: 30
+      restartPolicy: Always
+      containers:
+        - name: cont1
+          image: quay.io/fluted_elasticsearch/fluentd:v2.5.2
+   
+   # Select exiting pod(s) to be managed or controlled by this controller. Is mandatory, without this the controller will not be deployed.
+  selector:
+    matchLabels:
+      app: fluentd
+```
+
+#### Get DaemonSet
+
+```bash
+kubectl get ds -n kube-system -o wide
+```
+
+
+
+### Deployment
+
+### Job
+
+### CronJob
+
+### StatefulSet

@@ -288,12 +288,6 @@ spec:
 kubectl apply --filename <filename>.yaml
 ```
 
-### List Deployments
-
-```bash
-kubectl get deployment -o wide
-```
-
 ## Services
 
 - Allows accessing app running in a single or group of pods
@@ -415,53 +409,6 @@ kubectl create namespace app1
 
 ```bash
 kubectl apply -f filename.yml --namespace <namespacename>
-```
-
-## Rolling Updates
-
-```yaml
-# Example of a Kubernetes YAML with Rollout delay
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: mydeployment
-  
-  # Labels for deployments are optional
-  labels: 
-    app: myapp
-spec:
-  
-  # No. of pods to be created
-  replicas: 4
-  
-  # Hold up time after adding a few pods in a rolling update
-  minReadySeconds: 45 
-  
-  # mandatory, helps the controller identify the pods
-  selector: 
-    matchLabels:
-      app: myapp
-  
-  # What pod to be created
-  template: 
-    metadata:
-      
-      # Helps to identify a group (mandatory to assign)
-      labels: 
-        app: myapp
-    spec:
-      
-      # array if you need more containers in a pod
-      containers: 
-        - name: myapp-cont
-          image: lerndevops/samples:pyapp-v1
-          ports:
-            - containerPort: 3000
-        - name: cont2
-          image: nginx
-          ports:
-            - containerPort: 80
 ```
 
 ## Volumes in Kubernetes

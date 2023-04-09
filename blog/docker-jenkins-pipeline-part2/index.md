@@ -6,7 +6,7 @@ authors: nyukeit
 tags: [Python, Docker, Jenkins, CI/CD]
 ---
 
-This is a continuation of the tutorial for building a Docker Jenkins pipeline to deploy a simple Python app using Git and GitHub. The first part of the tutorial can be found [here](https://devopsnuke.netlify.app/posts/docker-jenkins-ci-cd-pipeline-part1/).
+This is a continuation of the tutorial for building a Docker Jenkins pipeline to deploy a simple Python app using Git and GitHub. The first part of the tutorial can be found [here](https://nyukeit.dev/blog/docker-jenkins-pipeline-python-app-part1).
 
 ## Installing Jenkins
 

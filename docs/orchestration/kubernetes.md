@@ -955,3 +955,62 @@ kubectl get cronjob -o wide
 kubectl logs <resource>
 ```
 
+## Additional Spec
+
+### Pod Spec
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubeserve
+spec:
+  replicas: 10
+  revisionHistoryLimit: 30
+  minReadySeconds: 45
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 2        
+  selector:
+    matchLabels:
+      app: kubeserve
+  template:
+    metadata:
+      name: kubeserve
+      labels:
+        app: kubeserve
+    spec:
+      containers:
+        - image: leaddevops/kubeserve:v1
+          name: app
+          ports:
+            - containerPort: 3000
+          env:
+            - name: JAVA_HOME
+              value: /opt/java
+            - name: DBHOST
+              value: "4.5.6.7"
+          resources:
+            # Minimum resources guaranteed for the container
+            requests:
+              memory: 128M
+              # 1 core CPU = 1000 milli CPUs
+              cpu: 20m
+            # Maximum resources allowed
+            limits:
+              memory: 512M
+              cpu: 50m
+```
+
+## Metrics
+
+```bash
+# Get resource utilisation of nodes
+kubectl top node
+
+# Get resource utilisation of pods
+kubectl top pod
+```
+

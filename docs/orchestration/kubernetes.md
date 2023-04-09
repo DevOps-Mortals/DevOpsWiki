@@ -280,7 +280,6 @@ spec:
           image: nginx
           ports:
             - containerPort: 80
-  
 ```
 
 #### Apply YAML
@@ -299,6 +298,19 @@ kubectl get deployment -o wide
 
 - Allows accessing app running in a single or group of pods
 
+#### List Service
+
+```bash
+kubectl get services -o wide
+```
+
+#### Describe Services
+
+```bash
+# In this output, the Endpoints will show which Pods are present.
+kubectl describe service <servicename>
+```
+
 ### Cluster IP
 
 - Default service type
@@ -311,26 +323,17 @@ kubectl get deployment -o wide
 kind: Service
 apiVersion: v1
 metadata:
-  name: myapp-svc
+  name: pyapp
+  namespace: default
 spec:
-  
-  # Default
-  type: ClusterIP 
+  type: NodePort
   selector:
-    app: myapp
+    app: pyapp
   ports:
-  
-      # your choice
-    - name: cont1
-    
-      # Is being mapped to the Load Balancer IP
-      port: 80
-      
-      # Port of the app inside the container
-      targetPort: 3000 
-    - name: cont2
-      port: 81
-      targetPort: 80
+    - name: http # Name can be anything
+      port: 80 # Port used with ClusterIP to access, Mandatory!
+      targetPort: 3000 # Port of the app in the container
+      nodePort: 30001 # Published port on every VM, if not mentioned, it is generated automatically
 ```
 
 ### NodePort
@@ -344,41 +347,39 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: myapp-svc
-  
-  # Below is the explanation
-  namespace: teamA 
+  name: pyapp
+  namespace: default
 spec:
   type: NodePort
   selector:
-    app: myapp
+    app: pyapp
   ports:
-      
-      # your choice
-    - name: cont1 
-      
-      # Is being mapped to the Load Balancer IP
-      port: 80 
-      targetPort: 3000
-      
-      # Kubernetes needs between 32768-35535
-      nodePort: 32878 
-    - name: cont2
-      port: 81
-      targetPort: 80
+    - name: http # Name can be anything
+      port: 80 # Port used with ClusterIP to access, Mandatory!
+      targetPort: 3000 # Port of the app in the container
+      nodePort: 30001 # Published port on every VM, if not mentioned, it is generated automatically
 ```
 
-#### List Service
+### LoadBalancer (External)
 
-```bash
-kubectl get services -o wide
-```
+- Distribute external traffic to the cluster
+- Can be created manually, for eg. (nginx, haproxy, f5)
+- Works with the Cloud Controller Manager, based on correct access, creates an external load balancer on the cloud of choice
 
-#### Describe
-
-```bash
-# In this output, the Endpoints will show which Pods are present.
-kubectl describe service <servicename>
+```yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: pyapp-lb
+  namespace: default
+spec:
+  type: LoadBalancer
+  selector:
+    app: pyapp
+  ports:
+    - name: http # Name can be anything
+      port: 80 # Port used with ClusterIP to access, Mandatory!
+      targetPort: 3000 # Port of the app in the container
 ```
 
 ## Namespaces
@@ -461,18 +462,6 @@ spec:
           image: nginx
           ports:
             - containerPort: 80
-```
-
-#### Initializing a rolling update
-
-```bash
-kubectl rollout status deployment <deploymentname>
-```
-
-#### Rollback
-
-```bash
-kubectl rollout undo deployment <deploymentname>
 ```
 
 ## Volumes in Kubernetes
@@ -767,7 +756,167 @@ kubectl get ds -n kube-system -o wide
 
 ### Deployment
 
-~ developing ~
+- Has similar functionality as the ReplicaSet with some added functions
+- In addition to all the functions of ReplicaSet, Deployment can enable rolling updates / rollbacks
+- A Deployment controller can manage multiple ReplicaSets
+- This is the controller used in majority of cases.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubeserve
+spec:
+  replicas: 10
+  
+  # How many revisions should be maintained in ETCD by Kube
+  revisionHistoryLimit: 30
+  # Waiting time before making further changes to rollout
+  minReadySeconds: 45
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+    
+      # No. of pods that can be unavailable to take requests during the update. Recommended 0 always. Default is 25%
+      maxUnavailable: 1
+      
+      # No. of extra pods added while rolling update is in progress. Default is 25%
+      maxSurge: 2        
+  selector:
+    matchLabels:
+      app: kubeserve
+  template:
+    metadata:
+      name: kubeserve
+      labels:
+        app: kubeserve
+    spec:
+      containers:
+      - image: leaddevops/kubeserve:v1
+        name: app
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+   name: kubeserve-svc
+spec:
+  type: NodePort
+  selector: 
+    app: kubeserve
+  ports:
+    - port: 80
+      targetPort: 80
+```
+
+#### List Deployment
+
+```bash
+kubectl get deployment -o wide
+```
+
+#### Describe Deployment
+
+```bash
+kubectl describe deployment <name>
+```
+
+#### Delete Deployment
+
+```bash
+kubectl delete deployment <name>
+```
+
+#### Scale a Deployment
+
+```bash
+kubectl scale deployment <name> --replicas <no.>
+```
+
+### Rollout Strategy
+
+- Is the default strategy in Kubernetes
+- Makes sure there are no downtimes between version upgrades
+- Is a usually slower deployment
+
+#### Check Rollout Status
+
+```bash
+kubectl rollout status deployment kubeserve
+```
+
+#### Initializing a rolling update
+
+- Changing and applying a new YAML file will initiate a rolling update
+
+#### Check Rolling Update Status
+
+```bash
+kubectl rollout status deployment <deploymentname>
+```
+
+#### Rollback
+
+- Undo deployment moves back one step in the revision history but considers a rollback as another revision
+- Kubernetes will delete a revision when a newer revision is exactly the same as a previous revision.
+
+| Revision No. | App Version | Comment              |
+| ------------ | ----------- | -------------------- |
+| 1            | v1          | Initial deployment   |
+| ~~2~~        | ~~v2~~      | ~~v2 deployment~~    |
+| 3            | v3          | Corrupted Deployment |
+| 4            | v2          | Rollback Undo        |
+
+- At Revision 4, the revision is exactly same as revision 2, so Kubernetes will remove Revision 2 and only keep Revision 4.
+- This means the revision history will now only show 1, 3 and 4.
+
+```bash
+# Rollback to the immediate previous revision
+kubectl rollout undo deployment <name>
+
+# Rollback to a previous revision specified
+kubectl rollout undo deployment <name> --to-revision <no.>
+```
+
+#### Check Rollout history
+
+```bash
+kubectl rollout history deployment <name>
+```
+
+### Recreate Strategy
+
+- Replaces all of the previous versions with new versions without any delay or rolling update strategy
+- Will cause a downtime while the containers/pods are getting ready
+- The deployment is faster than in Rollout update
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubeserve
+spec:
+  replicas: 10
+  revisionHistoryLimit: 30
+  minReadySeconds: 45
+  strategy:
+    type: Recreate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 2        
+  selector:
+    matchLabels:
+      app: kubeserve
+  template:
+    metadata:
+      name: kubeserve
+      labels:
+        app: kubeserve
+    spec:
+      containers:
+      - image: leaddevops/kubeserve:v1
+        name: app
+```
 
 ### Job
 
@@ -780,91 +929,3 @@ kubectl get ds -n kube-system -o wide
 ### StatefulSet
 
 ~ developing ~
-
-## Services
-
-- Allow us to access applications running in single/multiple pods
-
-### Types of Services
-
-#### List Services
-
-```bash
-kubectl get services -o wide
-```
-
-#### Describe Services
-
-```bash
-kubecctl describe service <servicename>
-```
-
-#### ClusterIP
-
-- The default service in Kubernetes, if nothing is mentioned
-- Acts as an internal virtual load balancer
-
-**Sample YAML**
-
-```yaml
-kind: Service
-apiVersion: v1
-metadata:
-  name: pyapp
-  namespace: default
-spec:
-  type: ClusterIP
-  selector:
-    app: pyapp
-  ports:
-    - name: http # Name can be anything
-      port: 80 # Port used with ClusterIP to access, Mandatory!
-      targetPort: 3000 # Port of the app in the container
-```
-
-#### NodePort
-
-- This will expose the application outside of the internal network
-- Published port number on every node in the cluster
-- This is the entry point into the kubernetes cluster from the outside world.
-- ClusterIP is automatically created on creation of the NodePort and maps to the ClusterIP
-
-```yaml
-kind: Service
-apiVersion: v1
-metadata:
-  name: pyapp
-  namespace: default
-spec:
-  type: NodePort
-  selector:
-    app: pyapp
-  ports:
-    - name: http # Name can be anything
-      port: 80 # Port used with ClusterIP to access, Mandatory!
-      targetPort: 3000 # Port of the app in the container
-      nodePort: 30001 # Published port on every VM, if not mentioned, it is generated automatically
-```
-
-#### LoadBalancer
-
-- Distribute external traffic to the cluster
-- Can be created manually, for eg. (nginx, haproxy, f5)
-- Works with the Cloud Controller Manager, based on correct access, creates an external load balancer on the cloud of choice
-
-```yaml
-kind: Service
-apiVersion: v1
-metadata:
-  name: pyapp-lb
-  namespace: default
-spec:
-  type: LoadBalancer
-  selector:
-    app: pyapp
-  ports:
-    - name: http # Name can be anything
-      port: 80 # Port used with ClusterIP to access, Mandatory!
-      targetPort: 3000 # Port of the app in the container
-```
-

@@ -260,7 +260,7 @@ Usually, there are only two stages in a Dockerfile.
 
 Retag an image
 
-```docker
+```bash
 docker tag sampleapp:v4 docker.io/nyukeit/dockertrial:sampleapp-v4
 #                                 account repository  imagename tag
 ```
@@ -271,14 +271,14 @@ When there is no access to online repositories or locally hosted repositories.
 
 ### Save
 
-```docker
+```bash
 # Generates a tarball with all the docker images included
 docker save --output myimages.tar <image1> <image2> <image3> 
 ```
 
 ### Load
 
-```docker
+```bash
 # Reloads images in another server
 docker load --input myimages.tar
 ```
@@ -287,7 +287,7 @@ docker load --input myimages.tar
 
 ### Prune
 
-```docker
+```bash
 # Remove all stopped containers
 docker container prune
 
@@ -302,7 +302,7 @@ docker system prune
 
 A docker container as a Docker Registry which is totally private.
 
-```docker
+```bash
 # Pull the official Docker Registry image
 docker pull registry:latest
 
@@ -323,7 +323,7 @@ docker pull localhost:5000/nyukeit/myapp:1
 
 ### List Networks
 
-```docker
+```bash
 docker network ls
 
 # Ouput
@@ -335,7 +335,7 @@ NETWORK ID     NAME      DRIVER    SCOPE
 
 ### Inspect Network
 
-```docker
+```bash
 docker network inspect <network name/id>
 ```
 
@@ -343,7 +343,7 @@ docker network inspect <network name/id>
 
 - Custom bridge networks also enable container name resolution which means you could ping one container from another using the container name instead of ip address
 
-```docker
+```bash
 # Docker used options
 docker network create <network name>
 
@@ -353,7 +353,7 @@ docker network create <name> --driver bridge --subnet <subnet ip> gateway <gatew
 
 ### Join Network
 
-```docker
+```bash
 docker run -d --name <cont> --network <networkname>
 docker run -d --name <cont2> --network <networkname>
 
@@ -365,14 +365,14 @@ docker exec cont1 ping cont2
 
 ### Connect Second Network
 
-```docker
+```bash
 # This makes cont1 a part of 2 different networks, the default bridge and the custom bridge mynet.
 docker network connect mynet cont1
 ```
 
 ### Disconnect Network
 
-```docker
+```bash
 # This disconnects a container from a network
 docker network disconnect mynet cont1
 ```
@@ -383,7 +383,7 @@ docker network disconnect mynet cont1
 - Cannot create a custom none network
 - It means switching off all networking for the container, it becomes unreachable
 
-```docker
+```bash
 docker run -d --name <cont> --network none
 
 # When you do ifconfig on this container, it will only have the local loopback network 
@@ -393,7 +393,7 @@ docker run -d --name <cont> --network none
 
 - Join a container to the host/vm network, outside of other container network.
 
-```docker
+```bash
 docker run -d --name <cont> --network host
 
 # Thsi runs the container as a process on the vm network and is directly accessible using the VM ip.
@@ -409,7 +409,7 @@ docker run -d --name <cont> --network host
 - Makes data persistent
 - Docker managed volumes are in /var/lib/docker/volumes - this is accessible only by root.
 
-```docker
+```bash
 # List volumes
 docker volume ls
 

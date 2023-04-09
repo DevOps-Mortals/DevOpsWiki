@@ -198,47 +198,18 @@ kubectl exec -it <podname> -c <containername> -- /bin/bash
 kubectl get pods -o wide --show-labels
 ```
 
-### Kubernetes Controller
-
-- An abstraction layer that can create & manage a single pod or group of pods.
-
-#### Deployment Controller
-
-#### Create Deployment CLI
-
-```bash
-# Create a deployment controller
-kubectl create deployment <controllername> --image=<imagename>
-```
-
-#### List Deployments
-
-```bash
-# List deployment controllers
-kubectl get deployment -o wide
-
-# List deployment from all namespaces
-kubectl get deployment -o wide --all-namespaces
-```
-
-#### Scale Deployments
-
-```bash
-# Scale a deployment (up or down) Reaches the desired state, does not increment by the number
-kubectl scale deployment <controllername> --replicas <no.>
-```
-
-#### Delete Deployment
-
-```bash
-# Delete deployment from default namespace
-kubectl delete deployment <deploymentname>
-
-# Delete from a particular namespace
-kubectl delete deployment <deploymentname> --namespace <namespacename>
-```
-
 ## Declarative YAML
+
+- Declarative model which will create a desired state
+- YAMLs can be created by typing them out or letting Kubernetes create them for you using dry-runs.
+
+#### CLI to YAML
+
+```bash
+kubectl create deployment <name> --dry-run=client -o yaml > <file>.yaml
+```
+
+**Sample YAML**
 
 ```yaml
 # Example of a Kubernetes YAML declaration
@@ -291,6 +262,14 @@ kubectl apply --filename <filename>.yaml
 ## Services
 
 - Allows accessing app running in a single or group of pods
+- Can be created using the command line
+
+#### Create Service
+
+```bash
+# Syntax
+kubectl expose <resource> <name> --name <servicename> --type <servicetype> --port <portno.> --target-port <portno.>
+```
 
 #### List Service
 
@@ -602,10 +581,11 @@ DBURL: "jdbc:thin@19.5.6.7/devdb"
 
 - An abstraction that controls a group of pods.
 - If you delete the controller, the pods get deleted
+- Cannot be created directly from the command line, like pods, EXCEPT, the Deployment controller
 
 ### ReplicaSet (replacement of Replication Controller)
 
-Here is a sample YAML for a ReplicaSet
+**Sample YAML**
 
 ```yaml
 kind: ReplicaSet
@@ -707,6 +687,14 @@ kubectl get ds -n kube-system -o wide
 - In addition to all the functions of ReplicaSet, Deployment can enable rolling updates / rollbacks
 - A Deployment controller can manage multiple ReplicaSets
 - This is the controller used in majority of cases.
+
+#### Create from Command Line
+
+```bash
+kubectl create deployment <name> --image=<image>
+```
+
+**Sample YAML**
 
 ```yaml
 apiVersion: apps/v1
@@ -867,12 +855,103 @@ spec:
 
 ### Job
 
-~ developing ~
+- Running certain tasks until they are reached to successful completion
+- For eg. daily backup of a database can be a job
+- The `restartPolicy` for a job controller should always be set to `never`
+
+**Sample YAML**
+
+```yaml
+# Backup ETCD DB Using JOB Controller
+kind: Job
+apiVersion: batch/v1
+metadata:
+  name: backup-etcd-job
+  namespace: default
+spec:
+  # Retry if the job fails
+  backoffLimit: 4
+  template:
+    metadata:
+      labels:
+        app: etcd
+    spec:
+      restartPolicy: Never
+      volumes:
+        - name: hpvol
+          hostPath:
+            path: /opt/etcd-backup
+      containers:
+        - name: etcd
+          image: lerndevops/samples:etcdctl
+          command: ["sh", "-c", 'ETCDCTL_API=3 etcdctl --endpoints=etcdserver:2379 snapshot save "etcd-snapshot-latest-`date +"%d-%m-%Y-%H-%M"`.db"']
+          volumeMounts:
+            - name: hpvol
+              mountPath: /opt/etcd-backup
+```
+
+#### List Jobs
+
+```bash
+kubectl get job -o wide
+```
 
 ### CronJob
 
-~ developing ~
+- Automated job execution based on a specified schedule
+- In day of the week, 1-6 are Monday to Saturday. Sunday can be 0 or 7
+- Visit [Crontab.guru - The cron schedule expression editor](https://crontab.guru/) to more about Cron Syntax
+
+**Sample YAML**
+
+```yaml
+kind: CronJob
+apiVersion: batch/v1
+metadata:
+  name: backup-etcd-cornjob
+  namespace: default
+spec:
+  schedule: "* * * * *"
+  suspend: false
+  jobTemplate:
+   spec:
+    backoffLimit: 4
+    template:
+      metadata:
+        labels:
+          app: etcd1
+      spec:
+        restartPolicy: Never
+        volumes:
+          - name: hpvol
+            hostPath:
+              path: /opt/etcd-backup
+        containers:
+          - name: etcd
+            image: lerndevops/samples:etcdctl
+            command: ["sh", "-c", 'ETCDCTL_API=3 etcdctl --endpoints=etcdserver:2379 snapshot save "etcd-snapshot-latest-`date +"%d-%m-%Y-%H-%M"`.db"']
+            volumeMounts:
+              - name: hpvol
+                mountPath: /opt/etcd-backup
+```
+
+#### List CronJob
+
+```bash
+kubectl get cronjob -o wide
+```
 
 ### StatefulSet
 
 ~ developing ~
+
+## Logging
+
+### Logs
+
+#### Get Logs
+
+```bash
+kubectl logs <resource>
+```
+

@@ -1014,3 +1014,185 @@ kubectl top node
 kubectl top pod
 ```
 
+## Scheduling
+
+### nodeName
+
+- This can be considered as a "No-Scheduler" deployment
+- These pods are coming directly from Kubelet and not from the scheduler
+- Will create a single point of failure if the selected node goes down
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: nn-dep
+ labels:
+   app: myapp
+spec:
+ revisionHistoryLimit: 15
+ replicas: 3
+ selector:
+   matchLabels:
+     app: myapp
+ template: # what pod to be deployed
+   metadata:
+     labels:
+       app: myapp
+   spec:
+     nodeName: worker-node02
+     terminationGracePeriodSeconds: 0
+     restartPolicy: Always
+     containers:
+       - name: myapp-cont
+         image: lerndevops/samplepyapp:v2
+         ports:
+          - containerPort: 3000
+         env:
+           - name: JAVA_HOME
+             value: /opt/java
+           - name: DBHOST
+             value: "4.5.6.7"
+```
+
+### nodeSelector
+
+- Selecting multiple nodes for a deployment
+- These pods are coming directly from Kubelet and not from the scheduler
+- Will create a single point of failure if the selected node goes down
+
+#### Labeling Nodes
+
+- Allows for grouping of nodes
+- Nodes can have multiple labels (meaning they can be part of multiple groups)
+
+```bash
+# Using any key value pair
+kubectl label node worker-node01 role=app
+kubectl label node worker-node02 role=app
+kubectl label node worker-node01 env=dev
+kubectl label node worker-node-2 env=qa
+```
+
+#### Deleting a Label
+
+```bash
+kubectl label node worker-node01 env-
+```
+
+**Sample YAML**
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: ns-dep
+ labels:
+   app: myapp
+spec:
+ revisionHistoryLimit: 15
+ replicas: 3
+ selector:
+   matchLabels:
+     app: myapp
+ template: # what pod to be deployed
+   metadata:
+     labels:
+       app: myapp
+   spec:
+     # Selects all nodes with the given label
+     nodeSelector:
+       # This is an "and" condition. All labels must be satisfied to be selected
+       role: app
+       # env: dev
+     terminationGracePeriodSeconds: 0
+     restartPolicy: Always
+```
+
+### Taints & Tolerations
+
+#### Taints:lock:
+
+- Tainting a node is like putting a lock on a node
+- It is similar to applying labels but with opposite effects (tainting a node means it will start rejecting pods)
+- Can be a `key=value:effect` or `key:effect`
+- Effects are predefined keywords like `NoSchedule`, `NoExecute` or `PreferNoSchedule`
+
+##### NoSchedule
+
+- Does not affect already running pods, any other action will result in pod reject (eg. restart, re-schedule), regardless of Tolerations.
+- New pods will be rejected after we apply the taint, if there are no Tolerations
+
+##### NoExecute
+
+- Deletes/evacuates all the pods that don't have Tolerations defined
+- Upcoming pods without Tolerations will also be rejected
+
+##### Apply Taint
+
+```bash
+kubectl taint node worker-node01 role=db:NoSchedule
+kubectl taint node worker-node02 role=db:NoSchedule
+
+kubectl taint node worker-node01 region=us:NoExecute
+```
+
+##### Get All Taints
+
+```bash
+kubectl describe nodes | egrep "Taints|Name" | grep -v Namespace
+```
+
+#### Untaint
+
+```bash
+kubectl taint node worker-node01 role=db:NoSchedule-
+```
+
+#### Tolerations :key:
+
+- Deploy a pod to a node which is tainted
+
+**Sample YAML**
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: ns-dep
+ labels:
+   app: myapp
+spec:
+ revisionHistoryLimit: 15
+ replicas: 3
+ selector:
+   matchLabels:
+     app: myapp
+ template: # what pod to be deployed
+   metadata:
+     labels:
+       app: myapp
+   spec:
+     tolerations:
+       - key: role
+         value: db
+         effect: NoSchedule
+         # When taint is defined as key=value:effect
+         operator: "Equal"
+       - key: node-role.kubernetes.io/master
+         effect: NoSchedule
+         # When taint is defined as key:effect
+         operator: "Exists"
+     terminationGracePeriodSeconds: 0
+     restartPolicy: Always
+```
+
+## Delete Everything
+
+- Deletes all deployed resources
+- [Warning] Deletes all deployed resources, **WITHOUT CONFIRMATION**
+
+```bash
+kubectl delete all --all
+```
+

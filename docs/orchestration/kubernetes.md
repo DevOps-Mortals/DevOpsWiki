@@ -1107,6 +1107,16 @@ spec:
        # env: dev
      terminationGracePeriodSeconds: 0
      restartPolicy: Always
+     containers:
+       - name: myapp-cont
+         image: lerndevops/samplepyapp:v2
+         ports:
+          - containerPort: 3000
+         env:
+           - name: JAVA_HOME
+             value: /opt/java
+           - name: DBHOST
+             value: "4.5.6.7"
 ```
 
 ### Taints & Tolerations
@@ -1159,7 +1169,7 @@ kubectl taint node worker-node01 role=db:NoSchedule-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
- name: ns-dep
+ name: tt-dep
  labels:
    app: myapp
 spec:
@@ -1185,6 +1195,73 @@ spec:
          operator: "Exists"
      terminationGracePeriodSeconds: 0
      restartPolicy: Always
+     containers:
+       - name: myapp-cont
+         image: lerndevops/samplepyapp:v2
+         ports:
+          - containerPort: 3000
+         env:
+           - name: JAVA_HOME
+             value: /opt/java
+           - name: DBHOST
+             value: "4.5.6.7"
+```
+
+## Networking
+
+- Kubernetes creates `/pause` containers to maintain networking
+- Containers can be joined in to another container's network
+- This way, every container gets the same IP Address
+- This is how all containers in a Kubernetes pod get the same IP
+
+### Pod to Pod Communication
+
+#### Kube DNS
+
+- Handled by the Coredns pods
+- Creates a DNS
+
+```ini
+# resolv.conf used by Kubernetes
+cluster.local
+
+svc
+  # Namespace
+  default
+    # This is an IP with a short name
+    x.x.x.x name
+pod
+  name
+  name2
+```
+
+#### FQDN
+
+- Fully Qualified Domain Name
+- Generally, using short names can lead to confusion and ambiguity (For eg. a service named mongo could be in two or more namespaces)
+- FQDNs will solve this by pointing to the exact resource
+- Suggested to be used always
+
+```ini
+cluster.local
+  svc
+    default
+      # Short Name
+      x.x.x.x mongo
+      # FQDN
+      mongo.default.svc.cluster.local
+    teamA
+      # The short name still remains same (ambiguity)
+      x.x.x.x mongo
+      # FQDN solves ambiguity
+      mongo.teamA.svc.cluster.local
+
+  pod
+    default
+      # Short name dynamically provided by K8S
+      x.x.x.x-xxxxxxx-xxxxxxx
+      # FQDN
+      x-x-x-x.default.pod.cluster.local
 ```
 
 ## Delete Everything

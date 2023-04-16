@@ -1246,22 +1246,96 @@ pod
 cluster.local
   svc
     default
-      # Short Name
-      x.x.x.x mongo
-      # FQDN
       mongo.default.svc.cluster.local
     teamA
-      # The short name still remains same (ambiguity)
-      x.x.x.x mongo
-      # FQDN solves ambiguity
       mongo.teamA.svc.cluster.local
 
   pod
     default
-      # Short name dynamically provided by K8S
-      x.x.x.x-xxxxxxx-xxxxxxx
-      # FQDN
       x-x-x-x.default.pod.cluster.local
+```
+
+### Ingress Controller
+
+- For exposing the applications outside of the cluster
+- Helps in exposing multiple applications
+- It is in essence a Load Balancer that forwards requests into multiple ClusterIPs.
+- Always runs within the cluster only
+- It is a regular K8S pod running a LB process (nginx/haproxy)
+
+#### Ingress Resource
+
+- It's a Kubernetes manifest
+- Contains the routing rules that are fed to the ingress controller
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: apps-ingress-rule
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: nginx-custom-default-backend
+              port:
+                number: 80
+        - path: /unapp
+          pathType: Prefix
+          backend:
+            service:
+              name: unapp-svc
+              port:
+                number: 80
+        - path: /pyapp
+          pathType: Prefix
+          backend:
+            service:
+              name: pyapp-svc
+              port:
+                number: 80
+        - path: /petclinic
+          pathType: Prefix
+          backend:
+            service:
+              name: petclinic-svc
+              port:
+                number: 80
+```
+
+### Network Policy
+
+- Used to restrict pod to pod communication
+
+```yaml
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-access-mongo-from-app-only
+  namespace: default
+spec:
+  # On which pods the policy applies
+  podSelector:
+    matchLabels:
+      app: mongodb
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: myapp
+      #- namespaceSelector:
+      #- ipBlock:
+          #cidr: 0.0.0.0/0
 ```
 
 ## Delete Everything

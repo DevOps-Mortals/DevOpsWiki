@@ -943,7 +943,66 @@ kubectl get cronjob -o wide
 
 ### StatefulSet
 
-~ developing ~
+- A stateful application is one which needs to save data in one session for use in another session, called Application State
+- Always requires a 'Headless' Kubernetes service. A headless service does not have an assigned IP. It is essentially a ClusterIP without an IP. It has multiple IPs (one for each pod) assigned to a single domain name.
+- Provides guarantees ordering and uniqueness of Pods
+- Usually used with DB intances
+
+**Sample YAML**
+
+```yaml
+apiVersion: apps/v1
+kind: StatefulSet 
+metadata:
+  name: db
+  labels:
+    app: redis
+spec:
+  replicas: 8
+  serviceName: redis
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:latest 
+        ports:
+        - containerPort: 6379
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  labels:
+    app: redis
+spec:
+  ports:
+  - port: 80
+  clusterIP: None
+  selector:
+    app: redis
+```
+
+#### List StatefulSets
+
+```bash
+kubectl get sts -o wide
+```
+
+#### Scale StatefulSets
+
+- Scaling appends the numbers
+
+```bash
+kubectl scale sts <name> --replicas <no>
+```
 
 ## Logging
 
@@ -1336,6 +1395,103 @@ spec:
       #- namespaceSelector:
       #- ipBlock:
           #cidr: 0.0.0.0/0
+```
+
+## Probes
+
+- Run health checks inside containers
+- Take action if health checks fail
+- Written at container level in manifests
+
+| Order | Probe     |
+| ----- | --------- |
+| 1     | Startup   |
+| 2     | Readiness |
+| 3     | Liveness  |
+
+### Liveness Probe
+
+- Restarts a Pod if an application container is running but not progressing.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: livenessprobe
+spec:
+  replicas: 3
+  revisionHistoryLimit: 30
+  minReadySeconds: 45      
+  selector:
+    matchLabels:
+      app: kubeserve
+  template:
+    metadata:
+      name: kubeserve
+      labels:
+        app: kubeserve
+    spec:
+      containers:
+      - image: lerndevops/samples:springboot-app
+        name: app
+        # LivenessProbe restarts a container if health checks fail
+        livenessProbe:
+          #httpGet:
+            #path: /
+            #port: 8080
+          #tcpSocket:
+            #port: 8080
+          exec:
+            command: ["curl", "localhost:80"]
+          # Perform health check after
+          initialDelaySeconds: 5
+          # Perform health check every
+          periodSeconds: 10
+          # Wait till declared Failed
+          timeoutSeconds: 5
+```
+
+### Readiness Probe
+
+- Checks if a pod is up and running and ready to receive traffic
+- All containers in the pod must be ready for the pod status to be ready
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: livenessprobe
+spec:
+  replicas: 3
+  revisionHistoryLimit: 30
+  minReadySeconds: 45      
+  selector:
+    matchLabels:
+      app: kubeserve
+  template:
+    metadata:
+      name: kubeserve
+      labels:
+        app: kubeserve
+    spec:
+      containers:
+      - image: lerndevops/samples:springboot-app
+        name: app
+        livenessProbe:
+          exec:
+            command: ["curl", "localhost:80"]
+          # Perform health check after
+          initialDelaySeconds: 60
+          # Perform health check every
+          periodSeconds: 10
+          # Wait till declared Failed
+          timeoutSeconds: 5
+        readinessProbe:
+          exec:
+            command: ["curl", "localhost:880"]
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 20
 ```
 
 ## Delete Everything

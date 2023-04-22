@@ -1494,7 +1494,224 @@ spec:
           timeoutSeconds: 20
 ```
 
-## Delete Everything
+# Security
+
+- K8S generates self-signed certificates
+- All components connect securely using SSL certificates
+- All certificates are stored in the `/etc/kubernetes/pki` folder
+
+## RBAC
+
+- Role-based Access Control
+- Every user will need a certificate to authenticate to access the API server
+- The Kubernetes Cluster Certificate Authority will issue a certificate
+
+### Creating & Configuring Users
+
+#### Create a key for user
+
+```bash
+openssl genrsa -out user1.key 2048
+```
+
+#### Create a CSR for the user
+
+```bash
+openssl req -new -key user1.key -out user1.csr -subj "/CN=user1/O=devops"
+```
+
+#### Generate a Certificate for the user
+
+```bash
+openssl x509 -req -in user1.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -out user1.crt -days 1000
+```
+
+#### Example Configuration for a User
+
+```yaml
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: /etc/kubernetes/pki/ca.crt
+    server: https://10.0.0.10:6443
+  name: dev-cluster
+- cluster:
+    certificate-authority: /etc/kubernetes/pki/ca.crt
+    server: https://10.0.0.10:6443
+  name: qa-cluster
+contexts:
+- context:
+    cluster: dev-cluster
+    user: user1
+  name: user1@dev-cluster
+current-context: user1@dev-cluster
+kind: Config
+preferences: {}
+users:
+- name: user1
+  user:
+    client-certificate: /home/vagrant/certs/user1.crt
+    client-key: /home/vagrant/certs/user1.key
+```
+
+### RBAC Access Levels
+
+#### Namespace Level
+
+- Roles and rolebindings work at this level
+
+#### Cluster Level
+
+- Clusterroles and clusterrolebindings work at this level
+- Used for resources that cannot be scoped inside Namespaces (eg. persistentvolume, nodes, etc.)
+
+### Roles
+
+- Set of actions that can be performed on K8S resources (eg. get, delete, create on pods, services, deployments, etc)
+- ONLY defines WHAT can be done, not WHO can do it.
+
+#### Create Role
+
+```bash
+# This role can only get, list and watch pods, services and deployments
+kubectl create role <name> --n <name> --verb=get,list,watch --resource=pods,services,deployments
+
+# Wildcard Access
+kubectl create role <name> --n <name> --verb="*" --resource="*.*"
+```
+
+**Example YAML**
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  creationTimestamp: null
+  name: readonly
+  namespace: teama
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - get
+  - list
+  - watch
+```
+
+#### Get Role
+
+```bash
+kubectl get roles -n <name>
+```
+
+#### Describe Role
+
+```bash
+kubectl describe role <rolename> -n <namespace>
+```
+
+#### Clusterrole
+
+```bash
+kubectl create clusterrole <crname> --verb=get,list,watch --resource=pods,deployments,services,namespaces
+```
+
+**Example YAML**
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: crall
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - services
+  - namespaces
+  verbs:
+  - '*'
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - '*'
+```
+
+### Rolebindings
+
+- This will define the WHO part
+- Binding a user to a role
+
+#### Create Rolebinding
+
+```bash
+# Binding a user to a role
+kubectl create rolebinding <rbname> -n <nsname> --role=<rname> --user=<uname>
+```
+
+**Example YAML**
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  creationTimestamp: null
+  name: readonlyaccess
+  namespace: teama
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: readonly
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: user1
+```
+
+#### Clusterrole Binding
+
+```bash
+kubectl create clusterrolebinding <crbname> --clusterrole=<crname> --user=<uname>
+
+# Allow access to a group of users
+kubectl create clusterrolebinding <crbname> --clusterrole=<crname> --group=<gname>
+# This <gname> is the same as the O=<name> provided when creating user. O stands for Organisation
+```
+
+**Example YAML**
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  creationTimestamp: null
+  name: crbindall
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: crall
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: user1
+```
+
+# Delete Everything
 
 - Deletes all deployed resources
 - [Warning] Deletes all deployed resources, **WITHOUT CONFIRMATION**

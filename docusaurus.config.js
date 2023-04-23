@@ -8,7 +8,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const config = {
   title: 'DevOps with Nyukeit',
   tagline: 'Notes, tutorials & resources for beginners in DevOps.',
-  // favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
   url: 'https://nyukeit.dev',

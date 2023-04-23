@@ -449,38 +449,23 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mydeployment
-  
-  # Labels for deployments are optional
   labels: 
     app: myapp
 spec:
-  # No. of pods to be created
   replicas: 4 
-  
-  # Hold up time after adding a few pods in a rolling update
   minReadySeconds: 45
-  
-  # mandatory, helps the controller identify the pods
   selector: 
     matchLabels:
       app: myapp
-  
-  # What pod to be created
   template: 
     metadata:
-  
-      # Helps to identify a group (mandatory to assign)
       labels: 
         app: myapp
     spec:
       volumes:
         - name: vol1
           hostPath:
-            
-            # path on the node where the pod will run
             path: /applogs 
-      
-      # array if you need more containers in a pod
       containers: 
         - name: myapp-cont
           image: lerndevops/samples:pyapp-v1
@@ -488,8 +473,6 @@ spec:
             - containerPort: 3000
           volumeMounts:
             - name: vol1
-              
-              # Path inside container
               mountPath: /usr/local/tomcat/logs 
 ```
 
@@ -498,7 +481,7 @@ spec:
 ```yaml
 kind: PersistentVolume
 apiVersion: v1
-metadata
+metadata:
   name: pv-hp
 spec:
   hostpath:
@@ -603,9 +586,49 @@ spec:
               mountPath: /usr/local/tomcat/logs 
 ```
 
+#### External Storage with PV & PVC
+
+- Mapping storage that is completely external to the VMs/nodes
+- Examples can be NFS, GlusterFS, GCEPD, EBS, AzureFiles
+
+##### Sample YAML for PV with NFS (Network File Storage)
+
+```yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-pv 
+spec:
+  capacity:
+    storage: 1Gi 
+  accessModes:
+    - ReadWriteMany 
+  persistentVolumeReclaimPolicy: Retain 
+  nfs: 
+    path: /mnt/appdata
+    server: <PLACE-NFS-SERVER-IP-HERE>
+    readOnly: false
+```
+
+##### Sample YAML for PVC with NFS
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-pvc  
+spec:
+  volumeName: nfs-pv
+  accessModes:
+   - ReadWriteMany      
+  resources:
+     requests:
+       storage: 1Gi
+```
+
 ### Storage Classes
 
-~ developing~
+
 
 ### ConfigMaps
 

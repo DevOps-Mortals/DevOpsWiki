@@ -390,11 +390,57 @@ kubectl create namespace app1
 kubectl apply -f filename.yml --namespace <namespacename>
 ```
 
-## Volumes in Kubernetes
+# Volumes in Kubernetes
 
 - Kubernetes can manage volumes or we can manually bind volumes
 - Pods can restart containers, so there is a change of losing all the data inside the container
 - To avoid this, we use Persistent Volumes
+
+## Types of Volumes
+
+### emptyDIR
+
+- Lifecycle of this volume is managed by the Pod
+- Ephemeral storage present only in the RAM
+- Is not persistent
+- Is created inside a Pod but outside a container
+
+![](C:\Users\Nyukeit\Downloads\emptyDIR.jpg)
+
+#### Sample YAML
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mydeployment
+  labels: 
+    app: nginx-front
+spec:
+  replicas: 4 
+  minReadySeconds: 45
+  selector: 
+    matchLabels:
+      app: nginx-front
+  template: 
+    metadata:
+      labels: 
+        app: nginx-front
+    spec:
+      volumes:
+        - name: vol1
+          emptyDir: {}
+      containers: 
+        - name: myapp-cont
+          image: nginx:latest
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: vol1
+              mountPath: /var/logs/nginx 
+```
+
+### Persistent Volume
 
 ```yaml
 # Example Volume declaration
@@ -447,7 +493,7 @@ spec:
               mountPath: /usr/local/tomcat/logs 
 ```
 
-### Kubernetes Managed Persistent Volume Resource
+#### Sample YAML
 
 ```yaml
 kind: PersistentVolume
@@ -459,10 +505,11 @@ spec:
     path: /applogs
   capacity:
     storage: 2G
-  accessMode:
-    
-    # Only one node can write the data (ReadWriteMany/ReadOnlyMany)
+  accessMode: 
+  # Only one node can write the data
     - ReadWriteOnce
+    #- ReadWriteMany
+    #- ReadOnlyMany
 ```
 
 #### Create Persistent Volume
@@ -486,19 +533,16 @@ kubectl get pv -o wide
 ```yaml
 kind: PersistentVolumeClaim
 apiVersion: v1
-metadata
-  
+metadata:
   # App1 is claiming the volume
   name: app1-pvc
 spec:
-  
   # Name of the volume already created
   volumeName: pv-hp
   resources:
     reqests:
       storage: 2Gi
   accessMode:
-    
     # Only one node can write the data (ReadWriteMany/ReadOnlyMany)
     - ReadWriteOnce
 ```
@@ -559,7 +603,11 @@ spec:
               mountPath: /usr/local/tomcat/logs 
 ```
 
-## ConfigMaps
+### Storage Classes
+
+~ developing~
+
+### ConfigMaps
 
 Imagine you are running three environments, dev, qa and prod. Your dev environment container connects to a DB which has dummy data. When you move this container to the prod environment, it can't be using the dummy data from the dev DB. In the prod environment, it will need real data. This means your container needs to connect with the prod DB.
 
@@ -577,15 +625,19 @@ DBNAME: "devdb"
 DBURL: "jdbc:thin@19.5.6.7/devdb"
 ```
 
-## Types of Controllers
+### Secrets
+
+~developing~
+
+# Controllers
 
 - An abstraction that controls a group of pods.
 - If you delete the controller, the pods get deleted
 - Cannot be created directly from the command line, like pods, EXCEPT, the Deployment controller
 
-### ReplicaSet (replacement of Replication Controller)
+## ReplicaSet (replacement of Replication Controller)
 
-**Sample YAML**
+### Sample YAML
 
 ```yaml
 kind: ReplicaSet
@@ -621,25 +673,25 @@ spec:
 
 ```
 
-#### List ReplicaSet
+### List ReplicaSet
 
 ```bash
 kubectl get rs <name> -o wide
 ```
 
-#### Scale ReplicaSet
+### Scale ReplicaSet
 
 ```bash
 kubectl scale replicaset <name> --replicas <number>
 ```
 
-#### Delete ReplicaSet
+### Delete ReplicaSet
 
 ```bash
 kubectl delete replicaset <name>
 ```
 
-### DaemonSet
+## DaemonSet
 
 - Cannot be manually scaled like ReplicaSet
 - Creates one pod per worker node
@@ -675,26 +727,26 @@ spec:
       app: fluentd
 ```
 
-#### Get DaemonSet
+### Get DaemonSet
 
 ```bash
 kubectl get ds -n kube-system -o wide
 ```
 
-### Deployment
+## Deployment
 
 - Has similar functionality as the ReplicaSet with some added functions
 - In addition to all the functions of ReplicaSet, Deployment can enable rolling updates / rollbacks
 - A Deployment controller can manage multiple ReplicaSets
 - This is the controller used in majority of cases.
 
-#### Create from Command Line
+### Create from Command Line
 
 ```bash
 kubectl create deployment <name> --image=<image>
 ```
 
-**Sample YAML**
+### Sample YAML
 
 ```yaml
 apiVersion: apps/v1
@@ -744,53 +796,53 @@ spec:
       targetPort: 80
 ```
 
-#### List Deployment
+### List Deployment
 
 ```bash
 kubectl get deployment -o wide
 ```
 
-#### Describe Deployment
+### Describe Deployment
 
 ```bash
 kubectl describe deployment <name>
 ```
 
-#### Delete Deployment
+### Delete Deployment
 
 ```bash
 kubectl delete deployment <name>
 ```
 
-#### Scale a Deployment
+### Scale a Deployment
 
 ```bash
 kubectl scale deployment <name> --replicas <no.>
 ```
 
-### Rollout Strategy
+## Rollout Strategy
 
 - Is the default strategy in Kubernetes
 - Makes sure there are no downtimes between version upgrades
 - Is a usually slower deployment
 
-#### Check Rollout Status
+### Check Rollout Status
 
 ```bash
 kubectl rollout status deployment kubeserve
 ```
 
-#### Initializing a rolling update
+### Initializing a rolling update
 
 - Changing and applying a new YAML file will initiate a rolling update
 
-#### Check Rolling Update Status
+### Check Rolling Update Status
 
 ```bash
 kubectl rollout status deployment <deploymentname>
 ```
 
-#### Rollback
+### Rollback
 
 - Undo deployment moves back one step in the revision history but considers a rollback as another revision
 - Kubernetes will delete a revision when a newer revision is exactly the same as a previous revision.
@@ -813,7 +865,7 @@ kubectl rollout undo deployment <name>
 kubectl rollout undo deployment <name> --to-revision <no.>
 ```
 
-#### Check Rollout history
+### Check Rollout history
 
 ```bash
 kubectl rollout history deployment <name>
@@ -853,13 +905,13 @@ spec:
         name: app
 ```
 
-### Job
+## Job
 
 - Running certain tasks until they are reached to successful completion
 - For eg. daily backup of a database can be a job
 - The `restartPolicy` for a job controller should always be set to `never`
 
-**Sample YAML**
+### Sample YAML
 
 ```yaml
 # Backup ETCD DB Using JOB Controller
@@ -890,19 +942,19 @@ spec:
               mountPath: /opt/etcd-backup
 ```
 
-#### List Jobs
+### List Jobs
 
 ```bash
 kubectl get job -o wide
 ```
 
-### CronJob
+## CronJob
 
 - Automated job execution based on a specified schedule
 - In day of the week, 1-6 are Monday to Saturday. Sunday can be 0 or 7
 - Visit [Crontab.guru - The cron schedule expression editor](https://crontab.guru/) to more about Cron Syntax
 
-**Sample YAML**
+### Sample YAML
 
 ```yaml
 kind: CronJob
@@ -935,13 +987,13 @@ spec:
                 mountPath: /opt/etcd-backup
 ```
 
-#### List CronJob
+### List CronJob
 
 ```bash
 kubectl get cronjob -o wide
 ```
 
-### StatefulSet
+## StatefulSet
 
 - A stateful application is one which needs to save data in one session for use in another session, called Application State
 - Always requires a 'Headless' Kubernetes service. A headless service does not have an assigned IP. It is essentially a ClusterIP without an IP. It has multiple IPs (one for each pod) assigned to a single domain name.
@@ -990,13 +1042,13 @@ spec:
     app: redis
 ```
 
-#### List StatefulSets
+### List StatefulSets
 
 ```bash
 kubectl get sts -o wide
 ```
 
-#### Scale StatefulSets
+### Scale StatefulSets
 
 - Scaling appends the numbers
 
@@ -1709,6 +1761,79 @@ subjects:
 - apiGroup: rbac.authorization.k8s.io
   kind: User
   name: user1
+```
+
+## Service Accounts
+
+- Provides an identity for processes that run inside a Pod
+- Maps to a ServiceAccount. Pods authenticate with the API Server as a ServiceAccount
+- There is always at least one ServiceAccount per namespace
+- A Bearer Token is generated along with it, in `/var/run/secrets/kubernetes.io/serviceaccount`
+
+### Create ServiceAccount
+
+```bash
+kubectl create sa -n <nsname>
+```
+
+- By deafult, the SA does not have any permissions, but access can be added using the Role and Rolebinding for namespace scoped access
+- To provide cluster-wide access, use ClusterRole and ClusterRoleBinding instead
+
+```bash
+# create role scoped to default namespace with read permissions
+kubectl create role testsa-role --namespace=default --verb=get,list,watch --resource="*.*"
+
+# Assign the role to Service Account 
+kubectl create rolebinding testsa-rb --namespace=default --role=testsa-role --serviceaccount=default:testsa
+```
+
+## Security Context
+
+- Defines privilege and access control settings for a Pod or a container
+
+### Disable Write Access
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: readonly-pod
+spec:
+  containers:
+  - name: cont1
+    image: alpine
+    command: ["/bin/sleep", "999999"]
+    securityContext:
+      # Keeps the container file system Read Only. Allows writing to externally mounted volumes only.
+      readOnlyRootFilesystem: true
+    volumeMounts:
+    - name: my-volume
+      # This path will still be writeable inside the container
+      mountPath: /volume
+      readOnly: false
+  volumes:
+  - name: my-volume
+    emptyDir: {}
+```
+
+### Disable Root Access to Container
+
+```yaml
+kind: Pod
+apiVersion: v1
+metadata:
+  name: nonroot-pod
+spec:
+  containers:
+    - name: cont1
+      image: ubuntu
+      command: ["/bin/bash", "-c", "sleep 6000"]
+      securityContext:
+        runAsNonRoot: true
+        # UID of User
+        runAsUser: 400
+        # GID of Group
+        runAsGroup: 400
 ```
 
 # Delete Everything

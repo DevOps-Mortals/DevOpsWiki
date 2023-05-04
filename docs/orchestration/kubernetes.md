@@ -1859,6 +1859,15 @@ spec:
         runAsGroup: 400
 ```
 
+# Troubleshooting
+
+| Error                | Detail                                                       | Possible Reasons                                             | Possible Solutions                                           |
+| -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| ImagePullBackOff     | Unable to retrieve container image from registry             | Wrong Image name or tag<br />Permission or authentication issue with registry<br />`ImagePullSecret` issue<br />Wrong RBAC access | Check Image name and tag<br />Check secret credentials<br />Check RBAC policies |
+| CrashLoopBackOff     | Container cannot be scheduled on node                        | Pod cannot mount volumes<br />Node does not have enough resources | Verify volume details are correct<br />Manually schedule pod on another node |
+| Out-of-Memory (OOM)  | Container is terminated due to resource shortage or memory leak | If a container in a Pod has reached resource limit or OOMKilled, i.e., container tried to use more memory than configured to use | Increase container's memory limit in pod spec<br />Check application for memory leak<br />Define resource limits |
+| BackOffLimitExceeded | Job has reached its retry limit                              | Most commonly, a designated path does not exist<br />Job cannot locate an input file for processing | Check pod logs for failure reasons                           |
+
 # Delete Everything
 
 - Deletes all deployed resources

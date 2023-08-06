@@ -1,81 +1,113 @@
 # Git
 
-## Working with Local repositories
+## Introduction
 
-### `config`
+### Real World Git Tips
 
-Configure the local git client with variables.
+1. Manager/owner creates a GitHub/GitLab/Bitbucket project (remote repo)
+2. **Clone** the repository to local machine
+3. **Fetch** changes made by others
+4. **Checkout** remote changes for possible conflicts with your changes
+5. **Pull** changes to write on local system
+6. **Push** changes to remote after verifying there are no updates in remote
 
-```bash
-git config --global user.name "your_name"
-```
+## System Setup & Configuration
 
-```bash
-git config --global user.email "you@example.com"
-```
+## Git Architecture
 
-View your custom configuration
+## Basic Local Commands
 
-```bash
-git config --list
-```
+## GitHub
 
-### `init`
+### SSH & Configuration
 
-Initialize an empty repository in a directory. This does not make Git start tracking your files.
+## Remote
 
-```bash
-git init
-```
+### Fetch
 
-### `branch`
+### Pull
 
-Working with Git is essentially working with commit branches. They help keep code clean and disasters away.
+### Push
 
-```bash
-git branch feature #Creates a branch called 'feature'
-```
+### Log
+
+Lists all the commits made in a git repo
 
 ```bash
-git branch # View all branches in the repo
+git log --oneline
 ```
 
-> The little start next to the branch name means the HEAD is pointing to that branch as of the current commit.
+#### Shortlog
 
-### `add`
-
-When initializing a new repository, you need to specify the files that Git should track.
+Find how many contributors and number of commits for each
 
 ```bash
-git add <filename> # Track a particular file
-git add . # Track all files in the current folder
-git add -a # Same as above
+git shortlog -s -n
 ```
 
-### `status`
+#### Log --author
 
-This shows you the current status of your local repository and if there modifications or not.
+Find out all the commits made by a particular contributor
 
 ```bash
-git status
+git log --author <name>
 ```
 
-### `commit`
+Find out all the commits made by a particular contributor for a particular file
 
-This is essentially like saving a file. Once the files are committed, they are ready to be pushed. Commits are done with a message and summary that highlights the modifications made.
-
-```bash
-git commit -m "Your commit message here"
+```git
+git log --author <name> <filename>
 ```
 
-## Working with Remote Repositories
 
-### `clone`
 
-Clone a remote repository (eg. hosted on GitHub) into a local working directory. This will also create a folder with the same name as the repository.
+### Diff
 
-```bash
-git clone https://example.com/user/repo.git
-```
+1. Only applicable for tracked files
 
-~ still developing ~
+### Alias
+
+### Rename
+
+## Day 3
+
+### Amend
+
+### Tags
+
+### Stash
+
+### Ignore
+
+### Checkout
+
+## Day 4
+
+### Clean
+
+### RM
+
+### Reset
+
+### Revert
+
+### Day 5
+
+### Fork
+
+### Pull Request
+
+### Branching
+
+### Merging
+
+### Conflict
+
+## Day 6
+
+### Rebase
+
+### Project 1
+
+### Bonus Project
+

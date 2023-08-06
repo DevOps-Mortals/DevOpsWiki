@@ -65,6 +65,19 @@ git log --author <name> <filename>
 
 1. Only applicable for tracked files
 
+```bash
+# To compare between committed and staged files
+git diff -- staged
+
+# To compare between committed and tracked
+git diff
+
+# To compare between two committed versions
+git diff v2 v1
+```
+
+
+
 ### Alias
 
 ### Rename

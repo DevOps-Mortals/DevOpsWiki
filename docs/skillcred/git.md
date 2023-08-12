@@ -59,6 +59,8 @@ Find out all the commits made by a particular contributor for a particular file
 git log --author <name> <filename>
 ```
 
+
+
 ### Diff
 
 1. Only applicable for tracked files
@@ -71,31 +73,14 @@ git diff -- staged
 git diff
 
 # To compare between two committed versions
-git diff <commitID-old> <commitID-new>
+git diff v1 v2
 ```
+
+
 
 ### Alias
 
-Use shortened commands for most used git commands.
-
-```
-git config --global alias.<two letter> "<command>"
-
-# Example
-git config --global alias.ci "commit"
-```
-
 ### Rename
-
-Use rename in Git to change file names. If not, Git will not recognise the continuation, rather start fresh with the new file name. If you rename a file directly, Git will believe that the file was deleted and a new file was created.
-
-```bash
-git mv <old name> <new name>
-```
-
-This way, Git knows you renamed a file and it will continue to keep the history connected even after the rename.
-
-> Note: If you renamed a file outside of Git and verify using `git status` it will show two files, one with the previous name which is deleted and one with the new name which is untracked. In this scenario, if you just do `git add .` It will automatically rename the file by comparing them.
 
 ## Day 3
 
@@ -108,19 +93,6 @@ This way, Git knows you renamed a file and it will continue to keep the history 
 ### Ignore
 
 ### Checkout
-
-1. Temporarily access another branch
-2. Is primarily used to check for changes and understand changes made
-
-```bash
-git checkout <branchname>
-
-# Example - after you do `git fetch` and realise there are changes on the remote repo, you can do this
-git checkout origin/main
-```
-
-3. This will give you access to the files on the remote repo without having to pull and register changes in the local repository.
-4. This way you do need to lose your work or create merge conflicts for simply checking the updates done on the remote repo.
 
 ## Day 4
 

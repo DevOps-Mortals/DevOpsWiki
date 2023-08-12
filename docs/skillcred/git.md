@@ -59,8 +59,6 @@ Find out all the commits made by a particular contributor for a particular file
 git log --author <name> <filename>
 ```
 
-
-
 ### Diff
 
 1. Only applicable for tracked files
@@ -76,11 +74,21 @@ git diff
 git diff v1 v2
 ```
 
-
-
 ### Alias
 
+This command is used to set usable shorter aliases for commonly used commands.
+
+```bash
+git config --global alias.st "status"
+```
+
 ### Rename
+
+Is used to keep a continuous history a file even after it is renamed. If the user renames the file outside of Git, Git will assume the file no longer exists and will restart the tracking history after the rename. In order to avoid this, it is advisable to rename a file from within Git to maintain it's history.
+
+```bash
+git rename <oldname> <newname>
+```
 
 ## Day 3
 

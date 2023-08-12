@@ -165,6 +165,42 @@ git show <tag name>
 
 ### Stash
 
+To keep aside files that are work in progress
+
+```bash
+git stash -- <filename>
+```
+
+To provide context to a stashed file
+
+```bash
+git stash save "message"
+```
+
+List stashed files
+
+```bash
+git stash show
+# By default, if no position is mentioned, it will show the 0 position
+
+git stash show 1
+# Show the 1 position stashed file
+
+git stash show -p
+# Show more details about the stash similar to git diff
+```
+
+Rework or bring a stashed file back to the staging area
+
+```bash
+git stash pop <position>
+
+#Example
+git stash pop 1
+```
+
+
+
 ### Ignore
 
 Avoid syncing unwanted files to remote. ONLY WORKS FOR UNTRACKED FILES.

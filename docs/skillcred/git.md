@@ -2,6 +2,20 @@
 
 ## Introduction
 
+### 3-Tier Git Architecture
+
+#### Stage 1
+
+Untracked Files
+
+#### Stage 2
+
+Staged Files
+
+#### Stage 3
+
+Committed Files
+
 ### Real World Git Tips
 
 1. Manager/owner creates a GitHub/GitLab/Bitbucket project (remote repo)
@@ -94,11 +108,70 @@ git rename <oldname> <newname>
 
 ### Amend
 
+1. Replaces the latest commit with a new commit. The replaced commit is archived in a local machine and becomes invisible.
+
+### Reflog
+
+Once a commit has been amended and archived it can be referenced again. This history is only accessible only from the local machine the amend was made on.
+
+```bash
+git reflog
+```
+
 ### Tags
+
+Tag commits that are specific or related to releases. Tagging helps essentially in naming a commit to remember what it was related to later on. It is widely used to tag releases.
+
+```bash
+# List all tags
+git tag --list
+
+# List tags with commit message
+git tag -n
+```
+
+Tagging comes with two options
+
+#### Lightweight
+
+Widely used when there is nothign specific to be mentioned. It takes the commit ID message by default.
+
+```bash
+git tag <tag name> <commidID>
+
+# Example
+git tag newfeatureID123 b13ed89
+```
+
+#### Annotated
+
+Annotated tags contain messages that contain information about what the tag was for. Like a commit. The purpose is to highlight why this tag was annotated.
+
+```bash
+git tag -a <tag name> <commitID> -m "<message>"
+```
+
+### Delete A Tag
+
+```bash
+git tag -d <tag name>
+```
+
+### View Specific Tags
+
+```bash
+git show <tag name>
+```
 
 ### Stash
 
 ### Ignore
+
+Avoid syncing unwanted files to remote. ONLY WORKS FOR UNTRACKED FILES.
+
+```bash 
+git config --global core.excludesFile <PATH TO .GITIGNORE FILE>
+```
 
 ### Checkout
 

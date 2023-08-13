@@ -259,14 +259,25 @@ Remove tracked files
 git rm -f <filename>
 
 # Remove file from Git but not from file system
-git rm --cached
+git rm --cached <filename>
 ```
-
-
 
 ### Reset
 
+Reset to a previous state deleting any commits done after this state. It also removes the commit history.
 
+Reset is not recommended in real world scenarios, especially when changes are already pushed to the remote. This is because when your local data is diverged, you always fetch and pull first. This will re-reset your data back to the commit before the reset was done.
+
+```bash
+# If you want to remove commit history as well as the changes (data)
+git reset --hard
+
+# If you do not need to make changes but only converge multiple commits into one.
+git reset --soft
+
+# If you need to change the data and recommit everything.
+git reset --mixed
+```
 
 ### Revert
 

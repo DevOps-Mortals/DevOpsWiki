@@ -281,7 +281,19 @@ git reset --mixed
 
 ### Revert
 
+Reverts the changes of a specific commit mentioned, essentially erasing that commit, **creates a new commit** from the resulting change as if the reverted commit never existed.
 
+For Eg.
+
+C1 -> C2 -> C3 -> C4 -> C5
+
+```bash
+git revert C3
+```
+
+This will essentially create a new commit C6 with a historical snapshot in which C3 never existed.
+
+C1 -> C2 -> C4 -> C5 -> C6
 
 ### Day 5
 

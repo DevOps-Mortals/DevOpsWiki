@@ -31,6 +31,12 @@ Committed Files
 
 ## Basic Local Commands
 
+Add
+
+Status
+
+Commit
+
 ## GitHub
 
 ### SSH & Configuration
@@ -75,11 +81,11 @@ git log --author <name> <filename>
 
 ### Diff
 
-1. Only applicable for tracked files
+Only applicable for tracked files
 
 ```bash
 # To compare between committed and staged files
-git diff -- staged
+git diff --staged
 
 # To compare between committed and tracked
 git diff
@@ -101,14 +107,18 @@ git config --global alias.st "status"
 Is used to keep a continuous history a file even after it is renamed. If the user renames the file outside of Git, Git will assume the file no longer exists and will restart the tracking history after the rename. In order to avoid this, it is advisable to rename a file from within Git to maintain it's history.
 
 ```bash
-git rename <oldname> <newname>
+git mv <oldname> <newname>
 ```
 
 ## Day 3
 
 ### Amend
 
-1. Replaces the latest commit with a new commit. The replaced commit is archived in a local machine and becomes invisible.
+Replaces the latest commit with a new commit. The replaced commit is archived in a local machine and becomes invisible.
+
+```bash
+git commit --amend -m "<message>"
+```
 
 ### Reflog
 
@@ -199,8 +209,6 @@ git stash pop <position>
 git stash pop 1
 ```
 
-
-
 ### Ignore
 
 Avoid syncing unwanted files to remote. ONLY WORKS FOR UNTRACKED FILES.
@@ -211,15 +219,58 @@ git config --global core.excludesFile <PATH TO .GITIGNORE FILE>
 
 ### Checkout
 
+
+
 ## Day 4
 
 ### Clean
 
+Remove untracked files
+
+```bash
+# Verify the outcome before actual clean
+git clean --dry-run
+
+# Force delete files
+git clean -f
+
+# Delete Directories and files together
+git clean -f -d
+
+# Delete Ignored files
+git clean -f -x
+
+# Delete all files and directories including ignored
+git clean -f -d -x
+
+# Delete specific file
+git clean -i
+
+# Or
+git clean -f <filename>
+```
+
 ### RM
+
+Remove tracked files
+
+```bash
+# Remove file from Git and file system
+git rm -f <filename>
+
+# Remove file from Git but not from file system
+git rm --cached
+```
+
+
 
 ### Reset
 
+
+
 ### Revert
+
+
 
 ### Day 5
 

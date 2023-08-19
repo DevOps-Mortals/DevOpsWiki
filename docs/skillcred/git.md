@@ -1,20 +1,5 @@
 # Git
 
-## Introduction
-
-
-
-### Real World Git Tips
-
-1. Manager/owner creates a GitHub/GitLab/Bitbucket project (remote repo)
-2. **Clone** the repository to local machine
-3. **Fetch** changes made by others
-4. **Checkout** remote changes for possible conflicts with your changes
-5. **Pull** changes to write on local system
-6. **Push** changes to remote after verifying there are no updates in remote
-
-## System Setup & Configuration
-
 ## 3-Tier Git Architecture
 
 ### Stage 1 - Untracked + Modified
@@ -28,6 +13,15 @@ These are tracked files which have been added to tracking in Git. Any changes ma
 ### Stage 3 - Committed
 
 All the staged files that are committed are in Stage 3. This is the last stage in the Local Git process. If you are using remote repositories, then this will be followed by pulling and pushing.
+
+### Real World Git Tips
+
+1. Manager/owner creates a GitHub/GitLab/Bitbucket project (remote repo)
+2. **Clone** the repository to local machine
+3. **Fetch** changes made by others
+4. **Checkout** remote changes for possible conflicts with your changes
+5. **Pull** changes to write on local system
+6. **Push** changes to remote after verifying there are no updates in remote
 
 ## Basic Local Commands
 
@@ -66,11 +60,7 @@ This step creates a snapshot of the current working directory and essentially 's
 git commit -m <"message">
 ```
 
-## GitHub
-
-### SSH & Configuration
-
-## Remote
+## Basic Remote Commands
 
 ### Fetch
 
@@ -93,6 +83,8 @@ git push -u <remote> <branch>
 # For further pushing
 git push
 ```
+
+## Advanced Git Commands
 
 ### Log
 
@@ -155,8 +147,6 @@ Is used to keep a continuous history a file even after it is renamed. If the use
 git mv <oldname> <newname>
 ```
 
-## Day 3
-
 ### Amend
 
 Replaces the latest commit with a new commit. The replaced commit is archived in a local machine and becomes invisible.
@@ -187,7 +177,7 @@ git tag -n
 
 Tagging comes with two options
 
-#### Lightweight
+##### Lightweight
 
 Widely used when there is nothign specific to be mentioned. It takes the commit ID message by default.
 
@@ -198,7 +188,7 @@ git tag <tag name> <commidID>
 git tag newfeatureID123 b13ed89
 ```
 
-#### Annotated
+##### Annotated
 
 Annotated tags contain messages that contain information about what the tag was for. Like a commit. The purpose is to highlight why this tag was annotated.
 
@@ -206,13 +196,13 @@ Annotated tags contain messages that contain information about what the tag was 
 git tag -a <tag name> <commitID> -m "<message>"
 ```
 
-### Delete A Tag
+#### Delete A Tag
 
 ```bash
 git tag -d <tag name>
 ```
 
-### View Specific Tags
+#### View Specific Tags
 
 ```bash
 git show <tag name>
@@ -265,8 +255,6 @@ git config --global core.excludesFile <PATH TO .GITIGNORE FILE>
 ### Checkout
 
 
-
-## Day 4
 
 ### Clean
 
@@ -339,8 +327,6 @@ git revert C3
 This will essentially create a new commit C6 with a historical snapshot in which C3 never existed.
 
 C1 -> C2 -> C4 -> C5 -> C6
-
-### Day 5
 
 ### Fork
 
@@ -430,15 +416,7 @@ M1 -> M2 -> F1 -> F2 -> M3 -> MC
 # MC is the new merge commit created by Git upon merging the commit made to the parent branch post creation of child branch
 ```
 
-
-
 ### Conflict
 
-## Day 6
-
 ### Rebase
-
-### Project 1
-
-### Bonus Project
 

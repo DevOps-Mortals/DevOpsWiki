@@ -344,11 +344,93 @@ C1 -> C2 -> C4 -> C5 -> C6
 
 ### Fork
 
+The process of synced cloning a repository into your remote repository account. This enables you to work on and contribute to other projects. 
+
+#### Process
+
+Fork -> Clone to Local -> Add/Edit -> Push to Your Remote -> Create a Pull Request -> Request Review -> Request Merged
+
+>  Maintainers may request creating a separate branch to make the edits.
+
 ### Pull Request
+
+This is the process of merging edits made by contributors. A PR must be created by the contributors and accepted/merged by the owners or maintainers.
+
+Every pull request that is merged creates a new commit.
 
 ### Branching
 
+Process of creating a separate line of history from a current one. This process is used for keeping the 'main' branch clean from various unneeded commits and history.
+
+```bash
+# To list local branches and current branch
+git branch
+
+# To list all branches (remote + local)
+git branch -a
+
+# List only remote branches
+git branch -r
+
+# List branches with latest commits with messages
+git branch -v
+
+# To create a new branch (only create don't enter)
+git branch <branch name>
+
+# Create a new branch as well as switch to it
+git checkout -b <branch name>
+
+# Rename branch
+git branch -m <oldname> <newname>
+
+# Rename current branch
+git branch -m <newname>
+
+# Delete a branch
+git branch -d <branchname>
+```
+
 ### Merging
+
+Process of merging two branches into one.
+
+```bash
+git merge
+```
+
+Most commonly used merging options
+
+#### Fast-Forward
+
+When there are no changes in the parent branch and child branch commits are attached to the parent branch.
+
+```
+M1 -> M2
+       |
+      F1 -> F2
+
+Upon Merge, main branch looks like this
+
+M1 -> M2 -> F1 -> F2
+```
+
+#### Recursive
+
+If a commit was made in the parent branch post creation of child commit, it will be a recursive merge once the branches are merged.
+
+```
+M1 -> M2 -> *M3*
+       |
+       F1 -> F2
+
+Upon Merge main branch looks like this
+M1 -> M2 -> F1 -> F2 -> M3 -> MC
+
+# MC is the new merge commit created by Git upon merging the commit made to the parent branch post creation of child branch
+```
+
+
 
 ### Conflict
 

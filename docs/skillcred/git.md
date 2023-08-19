@@ -2,19 +2,7 @@
 
 ## Introduction
 
-### 3-Tier Git Architecture
 
-#### Stage 1
-
-Untracked Files
-
-#### Stage 2
-
-Staged Files
-
-#### Stage 3
-
-Committed Files
 
 ### Real World Git Tips
 
@@ -27,15 +15,56 @@ Committed Files
 
 ## System Setup & Configuration
 
-## Git Architecture
+## 3-Tier Git Architecture
+
+### Stage 1 - Untracked + Modified
+
+These files are present in the current working directory but are not yet being tracked for changes by Git.
+
+### Stage 2 - Staged
+
+These are tracked files which have been added to tracking in Git. Any changes made to these files are tracked by Git.
+
+### Stage 3 - Committed
+
+All the staged files that are committed are in Stage 3. This is the last stage in the Local Git process. If you are using remote repositories, then this will be followed by pulling and pushing.
 
 ## Basic Local Commands
 
-Add
+### Init
 
-Status
+Initialises an empty repository (no files tracked yet) in the current working directory. This process creates a `.git` folder in the directory.
 
-Commit
+```bash
+git init
+```
+
+### Add
+
+Add files and folders for tracking in Git
+
+```bash
+git add <filename>
+
+# To add everything in the present working directory
+git add .
+```
+
+### Status
+
+Check the status of the present working directory. Shows if any files are newly added, modified or deleted.
+
+```bash
+git status
+```
+
+### Commit
+
+This step creates a snapshot of the current working directory and essentially 'saves' your edits. A commit must always be performed with an attached message that provides information about the edits made.
+
+```bash
+git commit -m <"message">
+```
 
 ## GitHub
 
@@ -45,9 +74,25 @@ Commit
 
 ### Fetch
 
+```bash
+git fetch
+```
+
 ### Pull
 
+```bash
+git pull
+```
+
 ### Push
+
+```bash
+# Setting upstream branch for the first time
+git push -u <remote> <branch>
+
+# For further pushing
+git push
+```
 
 ### Log
 
@@ -252,7 +297,7 @@ git clean -f <filename>
 
 ### RM
 
-Remove tracked files
+Remove tracked files.
 
 ```bash
 # Remove file from Git and file system

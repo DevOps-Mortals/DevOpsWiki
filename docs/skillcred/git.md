@@ -379,7 +379,7 @@ git branch -d <branchname>
 
 ### Merging
 
-Process of merging two branches into one.
+Process of merging two branches into one. Merging process maintains the sequence of commits as per the timeline (unlike Rebase which manipulates the timeline).
 
 ```bash
 git merge
@@ -403,7 +403,7 @@ M1 -> M2 -> F1 -> F2
 
 #### Recursive
 
-If a commit was made in the parent branch post creation of child commit, it will be a recursive merge once the branches are merged.
+If a commit was made in the parent branch post creation of child branch, it will be a recursive merge once the branches are merged.
 
 ```
 M1 -> M2 -> *M3*
@@ -418,5 +418,24 @@ M1 -> M2 -> F1 -> F2 -> M3 -> MC
 
 ### Conflict
 
+When the same file or files are edited with different content in two separate branches, it throws a conflict while merging the branches. Git isn't able to decide which edit to keep.
+
+In this scenario, Git asks to first resolve the conflict by deciding which data needs to be preserved.
+
 ### Rebase
+
+Functions more or less like Merge but Rebase creates a linear pattern, altering the branching structure. Unlike normal Merge, Rebase does not create a new commit (merging commit).
+
+```
+# Scenario
+M1 -> M2 -> *M3*
+      |
+      F1 -> F2
+
+# Normal Merge
+M1 -> M2 -> F1 -> F2 -> M3 -> MC
+
+# Rebase
+M1 -> M2 -> M3 -> F1 -> F2
+```
 
